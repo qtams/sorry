@@ -355,6 +355,55 @@
         }
       }
 
+      .btn-yes.yes-fullscreen {
+        position: fixed;
+        inset: 0.8rem;
+        width: auto;
+        height: auto;
+        min-width: 0;
+        max-width: none;
+        border-radius: 34px;
+        z-index: 10050;
+        transform: none !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.85rem;
+        padding: 2rem;
+        font-size: clamp(2.2rem, 10vw, 7rem);
+        line-height: 1;
+        text-align: center;
+        white-space: normal;
+        box-shadow:
+          0 35px 80px rgba(90, 63, 44, 0.35),
+          inset 0 0 0 2px rgba(255, 255, 255, 0.75);
+        animation: yesFullScreenPulse 1.1s ease-in-out infinite;
+      }
+
+      .btn-yes.yes-fullscreen .yes-small-text {
+        display: block;
+        font-size: clamp(0.95rem, 3.5vw, 1.6rem);
+        line-height: 1.35;
+        font-weight: 800;
+        max-width: 760px;
+        opacity: 0.9;
+      }
+
+      @keyframes yesFullScreenPulse {
+        0% {
+          scale: 1;
+        }
+
+        50% {
+          scale: 1.02;
+        }
+
+        100% {
+          scale: 1;
+        }
+      }
+
       .btn-no {
         background: #f2ded0;
         border: 1px solid #fff1e6;
@@ -727,6 +776,10 @@
         animation: diskSpin 7s linear infinite;
       }
 
+      .music-disk.paused {
+        animation-play-state: paused;
+      }
+
       @keyframes diskSpin {
         from {
           transform: rotate(0deg);
@@ -778,7 +831,7 @@
         flex-wrap: wrap;
       }
 
-      .spotify-play-btn {
+      .music-btn {
         appearance: none;
         border: none;
         text-decoration: none;
@@ -792,11 +845,12 @@
         color: #563927;
         font-size: 0.78rem;
         font-weight: 900;
+        font-family: inherit;
         box-shadow: 0 10px 18px rgba(90, 63, 44, 0.12);
         transition: all 0.2s ease;
       }
 
-      .spotify-play-btn:hover {
+      .music-btn:hover {
         transform: translateY(-1px);
         filter: brightness(1.03);
       }
@@ -805,15 +859,6 @@
         font-size: 0.65rem;
         color: #a87a5e;
         font-weight: 700;
-      }
-
-      .spotify-hidden-frame {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        opacity: 0;
-        pointer-events: none;
-        border: 0;
       }
 
       .close-letter {
@@ -999,7 +1044,7 @@
           margin-bottom: 0.42rem;
         }
 
-        .spotify-play-btn {
+        .music-btn {
           padding: 0.45rem 0.7rem;
           font-size: 0.72rem;
         }
@@ -1198,11 +1243,24 @@
         .music-tap-note {
           display: none;
         }
+
+        .btn-yes.yes-fullscreen {
+          inset: 0.45rem;
+          border-radius: 26px;
+          padding: 1.3rem;
+          font-size: clamp(2rem, 13vw, 4.4rem);
+        }
+
+        .btn-yes.yes-fullscreen .yes-small-text {
+          font-size: 0.95rem;
+        }
       }
     </style>
   </head>
 
   <body>
+    <audio id="loveSong" src="music.mp3" preload="auto" loop></audio>
+
     <div class="floating-decor">
       <div class="decor-item">💌</div>
       <div class="decor-item">✨</div>
@@ -1289,6 +1347,7 @@
           <div class="music-disk-wrap">
             <img
               class="music-disk"
+              id="musicDisk"
               src="disk.gif"
               alt="spinning music disk"
               onerror="this.closest('.music-disk-wrap').style.display = 'none'"
@@ -1299,35 +1358,16 @@
             <div class="music-kicker">now playing</div>
             <div class="music-title">A song for this letter</div>
             <div class="music-subtitle">
-              Press play while reading this message.
+              Soft volume, just for this message.
             </div>
 
             <div class="music-actions">
-              <a
-                class="spotify-play-btn"
-                href="https://open.spotify.com/track/2BPFPvaPh3N675z8qYahIy?si=3d5e0eb6f9c4411f"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ▶ Play on Spotify
-              </a>
+              <button class="music-btn" id="musicToggle" type="button">
+                ⏸ Pause music
+              </button>
 
-              <span class="music-tap-note">opens in Spotify</span>
+              <span class="music-tap-note">music.mp3 · 35% volume</span>
             </div>
-
-            <iframe
-              id="spotifyFrame"
-              class="spotify-hidden-frame"
-              title="Spotify preload player"
-              allow="
-                autoplay;
-                clipboard-write;
-                encrypted-media;
-                fullscreen;
-                picture-in-picture;
-              "
-              loading="lazy"
-            ></iframe>
           </div>
         </div>
 
@@ -1369,9 +1409,31 @@
             </p>
 
             <p>
+              I am sorry for everything. Sorry for the times I made you feel
+              hurt, unseen, tired, or unsure. Sorry for the moments when my
+              words were not gentle enough, when my actions made you question
+              your place in my heart, and when I failed to protect the peace
+              between us.
+            </p>
+
+            <p>
+              I never wanted to make your heart heavy. You deserve love that
+              feels safe, calm, honest, and sure. You deserve someone who
+              listens better, understands deeper, and chooses you even on
+              difficult days. I want to be that person for you.
+            </p>
+
+            <p>
               Please do not give up on us. I know not every day is easy, but I
               still believe in what we have. I believe in our love, in our bond,
               and in the beautiful future we can still build together.
+            </p>
+
+            <p>
+              I promise to be more patient with you, more careful with my words,
+              and more present in the moments that matter. I will show my love
+              through the way I treat you, the way I protect your feelings, and
+              the way I keep choosing us.
             </p>
 
             <p>
@@ -1389,6 +1451,12 @@
             </p>
 
             <p>
+              Please trust that my love is real. I may not always be perfect,
+              but my heart is sincere. I am willing to learn, to change, to
+              improve, and to become better for you and for us.
+            </p>
+
+            <p>
               You are someone I never want to lose. If you let me, I will keep
               proving that my love is real, steady, and full of hope. I want us
               to have more beautiful tomorrows together.
@@ -1398,6 +1466,12 @@
               Thank you for loving me, for being part of my life, and for giving
               my heart a reason to believe again. No matter what happens, please
               remember that what I feel for you is sincere and deeply true.
+            </p>
+
+            <p>
+              I am here, I am trying, and I am not giving up on you. I hope one
+              day, when you look at me, you will feel the assurance that you are
+              loved, valued, respected, and chosen every single day.
             </p>
 
             <p>With all my love,</p>
@@ -1422,16 +1496,16 @@
         const teaseSpan = document.getElementById("teaseMessage");
         const letterModal = document.getElementById("letterModal");
         const closeLetterBtn = document.getElementById("closeLetterBtn");
-        const spotifyFrame = document.getElementById("spotifyFrame");
-
-        const spotifyEmbedSrc =
-          "https://open.spotify.com/embed/track/2BPFPvaPh3N675z8qYahIy?utm_source=generator&theme=0";
+        const loveSong = document.getElementById("loveSong");
+        const musicToggle = document.getElementById("musicToggle");
+        const musicDisk = document.getElementById("musicDisk");
 
         let letterOpened = false;
         let noAttempts = 0;
         let dodgeTimeout = null;
         let lastNoAction = 0;
         let aosScrollTick = false;
+        let isMusicPlaying = false;
 
         const defaultStatusMessage =
           "💌 Click “NO” and watch “YES” get bigger.";
@@ -1479,7 +1553,6 @@
 
         function refreshAOS() {
           if (!window.AOS) return;
-
           if (aosScrollTick) return;
 
           aosScrollTick = true;
@@ -1492,18 +1565,62 @@
 
         letterModal.addEventListener("scroll", refreshAOS);
 
-        function startSpotifyMusic() {
-          if (!spotifyFrame) return;
+        function updateMusicUI(isPlaying) {
+          isMusicPlaying = isPlaying;
 
-          if (!spotifyFrame.getAttribute("src")) {
-            spotifyFrame.setAttribute("src", spotifyEmbedSrc);
+          if (musicToggle) {
+            musicToggle.innerHTML = isPlaying
+              ? "⏸ Pause music"
+              : "▶ Play music";
+          }
+
+          if (musicDisk) {
+            musicDisk.classList.toggle("paused", !isPlaying);
           }
         }
 
-        function stopSpotifyMusic() {
-          if (!spotifyFrame) return;
+        function startLocalMusic() {
+          if (!loveSong) return;
 
-          spotifyFrame.removeAttribute("src");
+          loveSong.volume = 0.35;
+          loveSong.currentTime = 0;
+
+          loveSong
+            .play()
+            .then(function () {
+              updateMusicUI(true);
+            })
+            .catch(function () {
+              updateMusicUI(false);
+            });
+        }
+
+        function stopLocalMusic() {
+          if (!loveSong) return;
+
+          loveSong.pause();
+          loveSong.currentTime = 0;
+          updateMusicUI(false);
+        }
+
+        if (musicToggle && loveSong) {
+          musicToggle.addEventListener("click", function () {
+            loveSong.volume = 0.35;
+
+            if (isMusicPlaying) {
+              loveSong.pause();
+              updateMusicUI(false);
+            } else {
+              loveSong
+                .play()
+                .then(function () {
+                  updateMusicUI(true);
+                })
+                .catch(function () {
+                  updateMusicUI(false);
+                });
+            }
+          });
         }
 
         function setTempMessage(message, isWarning) {
@@ -1530,12 +1647,26 @@
 
           noAttempts += 1;
 
+          const fullscreenAt = 8;
           const isSmallScreen = window.innerWidth <= 620;
-          const growthRate = isSmallScreen ? 0.23 : 0.28;
-          const maxScale = isSmallScreen ? 3.1 : 3.8;
-          const scale = Math.min(1 + noAttempts * growthRate, maxScale);
+          const growthRate = isSmallScreen ? 0.28 : 0.34;
+          const maxScaleBeforeFullscreen = isSmallScreen ? 3.5 : 4.4;
+          const scale = Math.min(
+            1 + noAttempts * growthRate,
+            maxScaleBeforeFullscreen,
+          );
 
           yesButton.style.setProperty("--yes-scale", scale);
+
+          if (noAttempts >= fullscreenAt) {
+            yesButton.classList.add("yes-fullscreen");
+            yesButton.innerHTML =
+              'YES NA PLEASE 🥺<span class="yes-small-text">tap here to open my letter, I really mean everything I said</span>';
+
+            statusMsgDiv.innerHTML = "🥺 The whole screen is saying YES now.";
+            teaseSpan.innerHTML = "Please tap the big YES 💛";
+            return;
+          }
 
           const textIndex = Math.min(noAttempts - 1, yesTexts.length - 1);
           yesButton.innerHTML = yesTexts[textIndex];
@@ -1548,7 +1679,7 @@
           teaseSpan.innerHTML = teaseTexts[teaseIndex];
 
           if (noAttempts >= 5) {
-            statusMsgDiv.innerHTML = "🥺 The YES button is begging now.";
+            statusMsgDiv.innerHTML = "🥺 The YES button is almost full screen.";
           }
         }
 
@@ -1630,7 +1761,7 @@
           statusMsgDiv.innerHTML = "📜 my letter to Adi · please read it";
           teaseSpan.innerHTML = "🐱 happy cat unlocked";
 
-          startSpotifyMusic();
+          startLocalMusic();
 
           setTimeout(function () {
             if (window.AOS) {
@@ -1649,6 +1780,7 @@
           yesButton.style.setProperty("--yes-scale", 1);
           yesButton.innerHTML = "📜 YES";
           yesButton.classList.remove("pulse");
+          yesButton.classList.remove("yes-fullscreen");
           yesButton.style.pointerEvents = "";
           yesButton.style.opacity = "";
 
@@ -1666,7 +1798,7 @@
           statusMsgDiv.style.transform = "scale(1)";
           teaseSpan.innerHTML = defaultTeaseMessage;
 
-          stopSpotifyMusic();
+          stopLocalMusic();
 
           if (dodgeTimeout) {
             clearTimeout(dodgeTimeout);
